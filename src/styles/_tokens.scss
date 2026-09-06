@@ -1,0 +1,25 @@
+:root {
+  color-scheme: light;
+  font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+  --bg: #f4f8fb;
+  --panel: var(--p-surface-0, #ffffff);
+  --ink: #071527;
+  --muted: #64748b;
+  --line: #dfe8f2;
+  --brand: #1769f5;
+  --brand-strong: #0b4fd2;
+  --brand-soft: #eaf2ff;
+  --navy: #071f3d;
+  --navy-strong: #04172d;
+  --success: #079455;
+  --success-soft: #e7f8ef;
+  --accent: #f79009;
+  --accent-soft: #fff4e5;
+  --danger: var(--p-red-600, #b42318);
+  --danger-soft: #fff1f3;
+  --shadow-panel: 0 22px 60px rgba(19, 39, 68, 0.08);
+  --shadow-soft: 0 10px 30px rgba(16, 42, 76, 0.06);
+  --radius: 8px;
+  --radius-control: 6px;
+  --space-page: clamp(1rem, 2.5vw, 2rem);
+}

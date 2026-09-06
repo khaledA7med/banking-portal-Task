@@ -1,0 +1,12 @@
+<header class="page-header">
+  <div>
+    <p class="eyebrow">{{ eyebrow() }}</p>
+    <h1>{{ title() }}</h1>
+  </div>
+
+  @if (actionLabel() && actionLink()) {
+    <a pButton severity="secondary" variant="outlined" [routerLink]="actionLink()">
+      {{ actionLabel() }}
+    </a>
+  }
+</header>

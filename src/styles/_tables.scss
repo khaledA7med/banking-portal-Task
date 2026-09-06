@@ -1,0 +1,54 @@
+.account-table {
+  overflow: hidden;
+}
+
+.account-table.p-datatable,
+.account-table .p-datatable-wrapper {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.account-table small {
+  color: var(--muted);
+  display: block;
+  margin-top: 0.25rem;
+  overflow-wrap: anywhere;
+}
+
+.account-table .p-datatable-thead > tr > th {
+  background: #f8fbff;
+  color: #475569;
+  font-size: 0.82rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.account-table .p-datatable-tbody > tr > td {
+  color: #223047;
+  padding-bottom: 1rem;
+  padding-top: 1rem;
+}
+
+.account-table .p-datatable-tbody > tr:hover {
+  background: #fbfdff;
+}
+
+.identity-cell {
+  align-items: center;
+  display: flex;
+  gap: 0.75rem;
+}
+
+.avatar {
+  background: #e7edf5;
+  color: #42526a;
+  height: 2.5rem;
+  width: 2.5rem;
+}
+
+@media (max-width: 760px) {
+  .customer-table,
+  .transaction-table {
+    display: none;
+  }
+}

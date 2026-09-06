@@ -1,0 +1,14 @@
+<dl class="details-list" [class.profile-list]="variant() === 'profile'">
+  @for (item of items(); track item.label) {
+    <div>
+      <dt>{{ item.label }}</dt>
+      <dd>
+        @if (item.mask === 'nationalId') {
+          {{ item.value.toString() | nationalIdMask }}
+        } @else {
+          {{ item.value }}
+        }
+      </dd>
+    </div>
+  }
+</dl>

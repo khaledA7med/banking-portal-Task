@@ -1,0 +1,15 @@
+.p-button {
+  border-radius: var(--radius-control);
+  font-weight: 800;
+  min-height: 2.75rem;
+}
+
+.p-button:not(.p-button-secondary) {
+  background: var(--brand);
+  border-color: var(--brand);
+}
+
+.p-button:not(.p-button-secondary):enabled:hover {
+  background: var(--brand-strong);
+  border-color: var(--brand-strong);
+}

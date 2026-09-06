@@ -1,0 +1,123 @@
+<section class="page-shell customer-details-page">
+  @if (vm$ | async; as vm) {
+    @if (vm.customer) {
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a routerLink="/dashboard">Customers</a>
+        <span>/</span>
+        <span>Customer Details</span>
+      </nav>
+
+      <section class="customer-hero">
+        <div class="profile-heading">
+          <span class="profile-avatar">{{ initials(vm.customer.name) }}</span>
+          <div>
+            <h1>{{ vm.customer.name }}</h1>
+            <p>CIF: {{ vm.customer.CIF }} <span>/</span> {{ vm.customer.segment }}</p>
+          </div>
+        </div>
+        <a pButton severity="secondary" variant="outlined" routerLink="/dashboard">Back</a>
+      </section>
+
+      <section class="profile-grid">
+        <p-card styleClass="content-section">
+          <ng-template #title>Personal Information</ng-template>
+          <app-detail-list [items]="customerProfileDetails(vm.customer)" variant="profile" />
+        </p-card>
+
+        <p-card styleClass="content-section quick-stats">
+          <ng-template #title>Quick Stats</ng-template>
+          <dl class="details-list profile-list">
+            <div>
+              <dt>Total Accounts</dt>
+              <dd>{{ vm.accounts.length }}</dd>
+            </div>
+            <div>
+              <dt>Total Balance</dt>
+              <dd>{{ totalBalance(vm.accounts) | currency: 'EGP' : 'symbol-narrow' }}</dd>
+            </div>
+            <div>
+              <dt>Active Accounts</dt>
+              <dd>{{ activeAccounts(vm.accounts) }}</dd>
+            </div>
+          </dl>
+        </p-card>
+      </section>
+
+      <p-card styleClass="content-section">
+        <ng-template #title>Accounts</ng-template>
+        <div class="desktop-data-table">
+          <p-table
+            styleClass="account-table"
+            [value]="vm.accounts"
+            [tableStyle]="{ 'min-width': '48rem' }"
+          >
+            <ng-template #header>
+              <tr>
+                <th>Account</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Balance</th>
+                <th>Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-account>
+              <tr>
+                <td>
+                  <strong>{{ account.id }}</strong>
+                  <small>{{ account.iban }}</small>
+                </td>
+                <td>{{ account.type }}</td>
+                <td>
+                  <app-status-badge [status]="account.status" />
+                </td>
+                <td class="amount-positive">
+                  {{ account.balance | currency: account.currency : 'symbol-narrow' }}
+                </td>
+                <td>
+                  <a
+                    pButton
+                    size="small"
+                    severity="secondary"
+                    variant="outlined"
+                    [routerLink]="['/accounts', account.id, 'transactions']"
+                  >
+                    Transactions
+                  </a>
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+              <tr>
+                <td colspan="5">No accounts are available for this customer.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+        <div class="mobile-account-list" aria-label="Accounts">
+          @for (account of vm.accounts; track account.id) {
+            <article>
+              <div>
+                <strong>{{ account.id }}</strong>
+                <span>{{ account.type }} / {{ account.status }}</span>
+                <small>{{ account.iban }}</small>
+              </div>
+              <div>
+                <strong class="amount-positive">
+                  {{ account.balance | currency: account.currency : 'symbol-narrow' }}
+                </strong>
+                <a [routerLink]="['/accounts', account.id, 'transactions']">Transactions</a>
+              </div>
+            </article>
+          } @empty {
+            <p class="muted">No accounts are available for this customer.</p>
+          }
+        </div>
+      </p-card>
+    } @else {
+      <p class="status-message">Customer was not found.</p>
+    }
+  } @else {
+    <p class="status-message">Loading customer details...</p>
+  }
+</section>

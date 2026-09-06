@@ -1,0 +1,310 @@
+<section class="page-shell transactions-page">
+  @if (vm$ | async; as vm) {
+    @if (vm.account) {
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a routerLink="/dashboard">Customers</a>
+        <span>/</span>
+        <a [routerLink]="'/customers/' + vm.account.customerId">{{ vm.account.customerId }}</a>
+        <span>/</span>
+        <span>Transactions</span>
+      </nav>
+
+      <section class="account-hero">
+        <div class="account-title">
+          <span class="account-icon">{{ vm.account.type[0] }}</span>
+          <div>
+            <h1>{{ vm.account.type }} Account</h1>
+            <p>{{ vm.account.id }} <span>/</span> {{ vm.account.currency }}</p>
+          </div>
+        </div>
+        <div class="balance-panel">
+          <span>Available Balance</span>
+          <strong>{{ vm.account.balance | currency: vm.account.currency : 'symbol-narrow' }}</strong>
+        </div>
+      </section>
+
+      <nav class="section-tabs" aria-label="Transaction sections">
+        <button type="button" (click)="scrollToSection('transactions-list')">Transactions</button>
+        <button type="button" (click)="scrollToSection('monthly-insights')">Monthly Insights</button>
+        <button type="button" (click)="scrollToSection('mini-statement')">Mini Statement</button>
+      </nav>
+
+      <p-card id="transactions-list" styleClass="content-section transaction-workspace">
+        <ng-template #title>
+          <div class="card-title-row">
+            <span>Transactions</span>
+            <p-button
+              label="Export CSV"
+              severity="secondary"
+              variant="outlined"
+              type="button"
+              (onClick)="exportCsv(vm.filteredTransactions, vm.account)"
+            />
+          </div>
+        </ng-template>
+        <form class="filters-grid transaction-toolbar" [formGroup]="filtersForm">
+          <label class="field">
+            <span>From</span>
+            <p-datepicker formControlName="fromDate" dateFormat="yy-mm-dd" [showIcon]="true" />
+          </label>
+          <label class="field">
+            <span>To</span>
+            <p-datepicker formControlName="toDate" dateFormat="yy-mm-dd" [showIcon]="true" />
+          </label>
+          <label class="field">
+            <span>Type</span>
+            <p-select
+              formControlName="type"
+              optionLabel="label"
+              optionValue="code"
+              placeholder="All"
+              [options]="vm.types"
+              [showClear]="true"
+            />
+          </label>
+          <label class="field">
+            <span>Category</span>
+            <p-select
+              formControlName="category"
+              placeholder="All"
+              [options]="vm.categories"
+              [showClear]="true"
+            />
+          </label>
+          <p-button
+            label="Reset"
+            severity="secondary"
+            variant="outlined"
+            type="button"
+            (onClick)="resetFilters()"
+          />
+          <p-button label="New Transaction" type="button" (onClick)="openTransactionDialog()" />
+        </form>
+
+        <div class="desktop-data-table">
+          <p-table
+            styleClass="account-table transaction-table"
+            [paginator]="true"
+            [rows]="5"
+            [tableStyle]="{ 'min-width': '56rem' }"
+            [value]="vm.filteredTransactions"
+          >
+            <ng-template #header>
+              <tr>
+                <th pSortableColumn="date">Date <p-sorticon field="date" /></th>
+                <th>Merchant</th>
+                <th>Category</th>
+                <th pSortableColumn="type">Type <p-sorticon field="type" /></th>
+                <th pSortableColumn="amount">Amount <p-sorticon field="amount" /></th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-transaction>
+              <tr>
+                <td>{{ transaction.date | date: 'dd MMM yyyy' }}</td>
+                <td>{{ transaction.merchant }}</td>
+                <td>{{ transaction.category }}</td>
+                <td>
+                  <p-tag
+                    [severity]="transaction.type === 'Credit' ? 'success' : 'danger'"
+                    [value]="transaction.type"
+                  />
+                </td>
+                <td [class.amount-positive]="transaction.type === 'Credit'" [class.amount-negative]="transaction.type === 'Debit'">
+                  {{ transaction.type === 'Credit' ? '+' : '-' }}{{ transaction.amount | currency: vm.account.currency : 'symbol-narrow' }}
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+              <tr>
+                <td colspan="5">No transactions match the selected filters.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+        <div class="mobile-transaction-list" aria-label="Transactions">
+          @for (transaction of vm.filteredTransactions; track transaction.id) {
+            <article>
+              <div>
+                <time>{{ transaction.date | date: 'dd MMM yyyy' }}</time>
+                <strong>{{ transaction.merchant }}</strong>
+                <span>{{ transaction.id }} / {{ transaction.category }}</span>
+              </div>
+              <strong
+                [class.amount-positive]="transaction.type === 'Credit'"
+                [class.amount-negative]="transaction.type === 'Debit'"
+              >
+                {{ transaction.type === 'Credit' ? '+' : '-' }}{{ transaction.amount | currency: vm.account.currency : 'symbol-narrow' }}
+              </strong>
+            </article>
+          } @empty {
+            <p class="muted">No transactions match the selected filters.</p>
+          }
+        </div>
+      </p-card>
+
+      <section id="monthly-insights" class="insights-grid">
+        <p-card styleClass="insight-card">
+          <p class="eyebrow">Total debit</p>
+          <strong>{{ vm.monthlyInsights.totalDebit | currency: vm.account.currency : 'symbol-narrow' }}</strong>
+          <p class="insight-caption">{{ vm.selectedMonthLabel }}</p>
+        </p-card>
+        <p-card styleClass="insight-card">
+          <p class="eyebrow">Total credit</p>
+          <strong>{{ vm.monthlyInsights.totalCredit | currency: vm.account.currency : 'symbol-narrow' }}</strong>
+          <p class="insight-caption">{{ vm.selectedMonthLabel }}</p>
+        </p-card>
+        <p-card styleClass="insight-card">
+          <p class="eyebrow">Highest spending category</p>
+          <strong>{{ vm.monthlyInsights.highestSpendingCategory }}</strong>
+          <p class="insight-caption">Debit transactions only</p>
+        </p-card>
+      </section>
+
+      <p-card id="mini-statement" styleClass="content-section">
+        <ng-template #title>Mini statement</ng-template>
+        <form class="statement-controls" [formGroup]="statementForm">
+          <label class="field">
+            <span>Last transactions</span>
+            <p-inputnumber formControlName="count" [min]="1" [max]="10" [showButtons]="true" />
+          </label>
+          <label class="field">
+            <span>Insight month</span>
+            <p-select
+              formControlName="month"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Latest month"
+              [options]="vm.monthOptions"
+              [showClear]="true"
+            />
+          </label>
+        </form>
+
+        <div class="mini-statement-list">
+          @for (transaction of vm.miniStatement; track transaction.id) {
+            <article>
+              <div>
+                <strong>{{ transaction.merchant }}</strong>
+                <span>{{ transaction.date | date: 'mediumDate' }} - {{ transaction.category }}</span>
+              </div>
+              <p-tag
+                [severity]="transaction.type === 'Credit' ? 'success' : 'danger'"
+                [value]="
+                  (transaction.type === 'Credit' ? '+' : '-') +
+                  (transaction.amount | currency: vm.account.currency : 'symbol-narrow')
+                "
+              />
+            </article>
+          } @empty {
+            <p class="muted">No transactions available for this account.</p>
+          }
+        </div>
+      </p-card>
+
+      <p-dialog
+        header="New Transaction"
+        styleClass="transaction-dialog"
+        [modal]="true"
+        [draggable]="false"
+        [resizable]="false"
+        [visible]="showTransactionDialog()"
+        (visibleChange)="showTransactionDialog.set($event)"
+      >
+        <form
+          id="new-transaction-form"
+          class="transaction-form dialog-form"
+          appFocusInvalidControl
+          [formGroup]="transactionForm"
+          (ngSubmit)="submit(vm.account)"
+        >
+          <label class="field">
+            <span>Transaction type</span>
+            <p-select
+              formControlName="type"
+              appendTo="body"
+              optionLabel="label"
+              optionValue="code"
+              [options]="vm.types"
+            />
+          </label>
+
+          <label class="field">
+            <span>Amount</span>
+            <p-inputnumber
+              formControlName="amount"
+              mode="decimal"
+              [max]="100000"
+              [min]="0"
+              [maxFractionDigits]="2"
+              [minFractionDigits]="0"
+            />
+          </label>
+          @if (amountInvalid) {
+            <p class="error">
+              Amount is required, must be greater than 0, max 100,000, and max 2 decimals.
+            </p>
+          }
+          @if (transactionForm.hasError('debitExceedsBalance')) {
+            <p class="error">Debit amount cannot exceed the selected account balance.</p>
+          }
+
+          <label class="field">
+            <span>Date</span>
+            <p-datepicker formControlName="date" appendTo="body" dateFormat="yy-mm-dd" [showIcon]="true" />
+          </label>
+          @if (dateInvalid) {
+            <p class="error">Date is required and cannot be in the future.</p>
+          }
+
+          <label class="field">
+            <span>Merchant</span>
+            <input pInputText formControlName="merchant" maxlength="50" placeholder="e.g. Vodafone" />
+          </label>
+          @if (merchantInvalid) {
+            <p class="error">Merchant is required and must be 3 to 50 characters.</p>
+          }
+
+          <label class="field">
+            <span>Category</span>
+            <p-select
+              formControlName="category"
+              appendTo="body"
+              placeholder="Select category"
+              [options]="vm.categories"
+            />
+          </label>
+          @if (categoryInvalid) {
+            <p class="error">Category is required.</p>
+          }
+
+          <aside class="balance-note">
+            <span>Available Balance</span>
+            <strong>{{ vm.account.balance | currency: vm.account.currency : 'symbol-narrow' }}</strong>
+            <p>Debit amount must not exceed the available balance.</p>
+          </aside>
+
+        </form>
+
+        <ng-template #footer>
+          <div class="dialog-actions">
+            <button
+              pButton
+              severity="secondary"
+              variant="outlined"
+              type="button"
+              (click)="showTransactionDialog.set(false)"
+            >
+              Cancel
+            </button>
+            <button pButton type="submit" form="new-transaction-form">Create Transaction</button>
+          </div>
+        </ng-template>
+      </p-dialog>
+    } @else {
+      <p class="status-message">Account was not found.</p>
+    }
+  } @else {
+    <p class="status-message">Loading transactions...</p>
+  }
+</section>

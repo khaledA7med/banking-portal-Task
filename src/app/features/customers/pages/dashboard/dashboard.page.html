@@ -1,0 +1,130 @@
+<section class="page-shell dashboard-page">
+  <div class="page-kicker">Dashboard</div>
+  <header class="workspace-heading">
+    <div>
+      <h1>Dashboard</h1>
+      <p>Overview of your banking customers and accounts</p>
+    </div>
+  </header>
+
+  @if (vm$ | async; as vm) {
+    <section class="metric-grid" aria-label="Banking overview">
+      <p-card styleClass="metric-card metric-blue">
+        <div class="metric-icon">TC</div>
+        <div>
+          <span>Total Customers</span>
+          <strong>{{ vm.totalCustomers }}</strong>
+        </div>
+      </p-card>
+      <p-card styleClass="metric-card metric-green">
+        <div class="metric-icon">TA</div>
+        <div>
+          <span>Total Accounts</span>
+          <strong>{{ vm.totalAccounts }}</strong>
+        </div>
+      </p-card>
+      <p-card styleClass="metric-card metric-amber">
+        <div class="metric-icon">AA</div>
+        <div>
+          <span>Active Accounts</span>
+          <strong>{{ vm.activeAccounts }}</strong>
+        </div>
+      </p-card>
+      <p-card styleClass="metric-card metric-dark">
+        <div class="metric-icon">TB</div>
+        <div>
+          <span>Total Balance</span>
+          <strong>{{ vm.totalBalance | currency: 'EGP' : 'symbol-narrow' }}</strong>
+        </div>
+      </p-card>
+    </section>
+
+    <section class="dashboard-grid">
+      <p-card styleClass="content-section customer-table-card">
+        <ng-template #title>Recent Customers</ng-template>
+        <form class="toolbar-row" [formGroup]="filtersForm">
+          <label class="search-field">
+            <span class="sr-only">Search customers</span>
+            <input pInputText formControlName="search" placeholder="Search customers, accounts..." />
+          </label>
+          <label class="select-field">
+            <span class="sr-only">Segment</span>
+            <p-select
+              formControlName="segment"
+              placeholder="All Segments"
+              [options]="vm.segmentOptions"
+              [showClear]="true"
+            />
+          </label>
+        </form>
+
+        <div class="desktop-data-table">
+          <p-table
+            styleClass="account-table customer-table"
+            [paginator]="true"
+            [rows]="5"
+            [tableStyle]="{ 'min-width': '48rem' }"
+            [value]="vm.filteredCustomers"
+          >
+            <ng-template #header>
+              <tr>
+                <th>CIF</th>
+                <th>Customer Name</th>
+                <th>Segment</th>
+                <th>Email</th>
+                <th>Accounts</th>
+                <th>Actions</th>
+              </tr>
+            </ng-template>
+            <ng-template #body let-customer>
+              <tr>
+                <td>{{ customer.CIF }}</td>
+                <td>
+                  <div class="identity-cell">
+                    <span class="avatar">{{ initials(customer.name) }}</span>
+                    <strong>{{ customer.name }}</strong>
+                  </div>
+                </td>
+                <td>{{ customer.segment }}</td>
+                <td>{{ customer.email }}</td>
+                <td>{{ customer.accountCount }}</td>
+                <td>
+                  <p-button
+                    label="View"
+                    size="small"
+                    type="button"
+                    (onClick)="viewCustomer(customer.CIF)"
+                  />
+                </td>
+              </tr>
+            </ng-template>
+            <ng-template #emptymessage>
+              <tr>
+                <td colspan="6">No customers match the selected filters.</td>
+              </tr>
+            </ng-template>
+          </p-table>
+        </div>
+
+        <div class="mobile-customer-list" aria-label="Recent customers">
+          @for (customer of vm.filteredCustomers; track customer.CIF) {
+            <article>
+              <span class="avatar">{{ initials(customer.name) }}</span>
+              <div>
+                <strong>{{ customer.name }}</strong>
+                <span>{{ customer.CIF }} / {{ customer.segment }}</span>
+              </div>
+              <button type="button" aria-label="View customer" (click)="viewCustomer(customer.CIF)">
+                >
+              </button>
+            </article>
+          } @empty {
+            <p class="muted">No customers match the selected filters.</p>
+          }
+        </div>
+      </p-card>
+    </section>
+  } @else {
+    <p class="status-message">Loading customers...</p>
+  }
+</section>

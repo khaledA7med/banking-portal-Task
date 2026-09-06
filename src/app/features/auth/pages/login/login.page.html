@@ -1,0 +1,76 @@
+<section class="auth-screen">
+  <aside class="auth-visual" aria-label="Banking Portal">
+    <a class="brand-mark auth-brand">
+      <span>BP</span>
+      <strong>Banking Portal</strong>
+    </a>
+    <div class="auth-copy">
+      <h1>Your Financial Partner for What's Next</h1>
+      <p>Trusted banking services. Stronger people. Brighter futures.</p>
+    </div>
+    <div class="trust-row" aria-label="Trust highlights">
+      <span>Secure</span>
+      <span>Reliable</span>
+      <span>Always Ahead</span>
+    </div>
+  </aside>
+
+  <main class="auth-form-area">
+    <div class="language-pill">English</div>
+    <div class="auth-panel">
+      <div>
+        <h1>Welcome Back</h1>
+        <p class="muted">Sign in to access your banking portal</p>
+      </div>
+
+      <form class="form-stack" appFocusInvalidControl [formGroup]="loginForm" (ngSubmit)="submit()">
+        <label class="field">
+          <span>Email</span>
+          <input
+            pInputText
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            placeholder="admin@portal.com"
+          />
+        </label>
+        @if (emailInvalid) {
+          <p class="error">Enter a valid email address.</p>
+        }
+
+        <label class="field">
+          <span>Password</span>
+          <p-password
+            formControlName="password"
+            autocomplete="current-password"
+            placeholder="Enter your password"
+            styleClass="w-full"
+            inputStyleClass="w-full"
+            [feedback]="false"
+            [toggleMask]="true"
+          />
+        </label>
+        @if (passwordInvalid) {
+          <p class="error">Password is required and must be at least 6 characters.</p>
+        }
+
+        <div class="login-options">
+          <label>
+            <input type="checkbox" checked />
+            <span>Remember me</span>
+          </label>
+          <a>Forgot password?</a>
+        </div>
+
+        @if (hasInvalidCredentials) {
+          <p class="error">{{ invalidCredentialsMessage }}</p>
+        }
+
+        <p-button label="Sign In" type="submit" styleClass="w-full" />
+
+        <div class="sso-divider"><span>or continue with</span></div>
+        <button class="sso-button" type="button">Sign in with SSO</button>
+      </form>
+    </div>
+  </main>
+</section>

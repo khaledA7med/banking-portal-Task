@@ -1,0 +1,58 @@
+<div class="app-layout">
+  <aside class="app-sidebar" aria-label="Main navigation">
+    <a class="brand-mark" routerLink="/dashboard">
+      <span><svg data-p-icon="building-columns" /></span>
+      <strong>Banking Portal</strong>
+    </a>
+
+    <input class="sidebar-toggle" id="sidebar-toggle" type="checkbox" aria-label="Toggle navigation" />
+    <label class="sidebar-toggle-button" for="sidebar-toggle" aria-label="Toggle navigation">
+      <svg data-p-icon="bars" />
+    </label>
+
+    <nav class="nav-list">
+      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <svg data-p-icon="chart-bar" />
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/customers" routerLinkActive="active">
+        <svg data-p-icon="users" />
+        <span>Customers</span>
+      </a>
+    </nav>
+  </aside>
+
+  <main class="app-content">
+    <header class="topbar" aria-label="Workspace tools">
+      <label class="global-search">
+        <span class="sr-only">Global search</span>
+        <input type="search" placeholder="Search customers, accounts..." />
+      </label>
+      <div class="user-menu" aria-label="Signed in user">
+        <button
+          class="user-chip"
+          type="button"
+          aria-haspopup="menu"
+          [attr.aria-expanded]="userMenuOpen()"
+          (click)="toggleUserMenu()"
+        >
+          <span>AH</span>
+          <div>
+            <strong>Ahmed Hassan</strong>
+            <small>System User</small>
+          </div>
+        </button>
+        @if (userMenuOpen()) {
+          <div class="user-dropdown" role="menu">
+            <button type="button" role="menuitem" (click)="logout()">
+              <svg data-p-icon="sign-out" />
+              <span>Logout</span>
+            </button>
+          </div>
+        }
+      </div>
+    </header>
+
+    <router-outlet />
+  </main>
+</div>

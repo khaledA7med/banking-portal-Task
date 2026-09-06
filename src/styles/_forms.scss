@@ -1,0 +1,44 @@
+.form-stack {
+  display: grid;
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.field span,
+dt {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.field .p-inputtext,
+.field .p-password,
+.field .p-password-input,
+.field .p-datepicker,
+.field .p-select,
+.field .p-inputnumber,
+.field .p-inputnumber-input {
+  width: 100%;
+}
+
+.field .p-inputtext,
+.field .p-password-input,
+.field .p-select,
+.field .p-datepicker-input,
+.field .p-inputnumber-input {
+  min-height: 2.9rem;
+}
+
+.p-inputtext:enabled:focus,
+.p-password-input:enabled:focus,
+.p-select:not(.p-disabled).p-focus,
+.p-datepicker-input:enabled:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(23, 105, 245, 0.12);
+}
