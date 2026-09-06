@@ -50,7 +50,7 @@ describe('BankingDataService', () => {
   it('applies debit and credit transactions to account balance', async () => {
     const initialAccount = firstValueFrom(service.getAccount('A1001'));
 
-    httpMock.expectOne('/assets/mock/accounts.json').flush(accounts);
+    httpMock.expectOne('assets/mock/accounts.json').flush(accounts);
 
     expect((await initialAccount)?.balance).toBe(1000);
 
@@ -89,7 +89,7 @@ describe('BankingDataService', () => {
 
     const accountTransactions = firstValueFrom(service.getTransactionsByAccount('A1001'));
 
-    httpMock.expectOne('/assets/mock/transactions.json').flush(transactions);
+    httpMock.expectOne('assets/mock/transactions.json').flush(transactions);
 
     expect(await accountTransactions).toEqual(
       expect.arrayContaining([

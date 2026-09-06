@@ -13,7 +13,8 @@ import { Transaction, TransactionTypeOption } from '../models/transaction';
 export class BankingDataService {
   private readonly alertService = inject(AlertService);
   private readonly http = inject(HttpClient);
-  private readonly mockPath = '/assets/mock';
+  // Use a relative path so deployments under a subfolder, like GitHub Pages, honor the app base href.
+  private readonly mockPath = 'assets/mock';
 
   // Static JSON files are cached once and replayed to every feature that needs them.
   private readonly customersRequest$ = this.loadMock<Customer[]>('customers.json', []);
